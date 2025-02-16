@@ -4,6 +4,10 @@
 
 ![1](./img/1.png)
 
+- GitHub: [https://github.com/KZ25T/debian-PE](https://github.com/KZ25T/debian-PE)
+- Gitee: [https://gitee.com/KZ25T/debian-pe](https://gitee.com/KZ25T/debian-pe)
+- 联系作者、打赏：邮箱 `i.k.u.n@qq.com`
+
 ## 1. 特色
 
 主要特色：
