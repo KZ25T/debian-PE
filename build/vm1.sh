@@ -1,4 +1,10 @@
 #!/bin/bash
+remainFiles=false
+recommends="--no-install-recommends"
+if [[ "$1" == "--nodelete" ]]; then
+    remainFiles=true
+    recommends=""
+fi
 set -e
 trap 'echo "commamd error: $BASH_COMMAND"' ERR
 
@@ -12,10 +18,10 @@ firmware-bnx2 firmware-bnx2x  firmware-cavium firmware-myricom firmware-netronom
 alsa-topology-conf alsa-ucm-conf avahi-autoipd bluetooth efibootmgr grub-efi-amd64 powertop shim-signed shim-unsigned task-laptop usbutils wireless-tools wpasupplicant wireless-regdb \
 ntfs-3g btrfs-progs dosfstools mtools squashfs-tools exfatprogs xfsprogs \
 vim gparted hardinfo mlocate sudo zsh ncdu tldr cmake build-essential tree file man-db bash-completion python-is-python3 p7zip-full \
-xorg xfce4 xfce4-goodies lightdm network-manager-gnome xfce4-power-manager tumbler \
+xorg xfce4 xfce4-goodies lightdm network-manager-gnome xfce4-power-manager xfce4-power-manager-plugins tumbler \
 live-boot open-vm-tools-desktop locales librsvg2-common arch-install-scripts udisks2 rsync \
 /mnt/*.deb \
---no-install-recommends
+${recommends}
 ## web-browser should install recommends
 apt install -y firefox-esr
 ## remove software
@@ -75,24 +81,6 @@ cp -r /mnt/Windows-10-Dark-3.2.1-dark /usr/local/share/themes
 mkdir /usr/local/share/icons
 cp -r /mnt/Windows-10-Icons /usr/local/share/icons
 
-#  clean language pack & doc & other useless tools
-rm -rf /var/cache/* /var/log/* /var/lib/apt/lists/{mirror*,security*} /usr/share/doc /usr/share/bug /usr/share/vim/vim90/doc /etc/apt/sources.list.d/* /usr/share/icons/Adwaita /opt/sogoupinyin/files/share/resources/font /usr/share/presage
-shopt -s extglob
-rm -rf /usr/share/i18n/locales/!(iso*|trans*|i18n*|C|POSIX|zh_CN)
-rm -rf /usr/share/i18n/locales/translit_hangul
-rm -rf /usr/share/i18n/charmaps/!(ANSI_*|ISO-8859-1.gz|UTF-8.gz|GB*)
-rm -rf /usr/share/vim/vim90/lang/!(zh_CN*|menu_zh_CN*)
-rm -rf /usr/share/locale/!(zh_CN|zh_Hans|locale.alias)
-rm -rf /usr/share/code/locales/!(zh-CN.pak|en-US.pak)
-rm -rf /usr/share/open-vm-tools/messages/!(zh_CN)
-rm -rf /usr/share/man/!(man*|zh_CN)
-rm -rf /usr/share/help/!(C)
-rm -rf /opt/microsoft/msedge/locales/!(zh-CN*)
-rm -rf /opt/QQ/locales/!(zh-CN*)
-rm -rf /opt/sogoupinyin/files/share/resources/skin/!(default|logo|stretchrules.json|InputMode.xml)
-rm -rf /usr/share/backgrounds/xfce/!(xfce-leaves.svg)
-shopt -u extglob
-
 #  create user default doc
 cp -r /mnt/resource/userprofile/{*,.*} /etc/skel
 userdel -r uid1000
@@ -142,3 +130,24 @@ theme-name = Windows-10-Dark-3.2.1-dark
 icon-theme-name = Windows-10-Icons
 font-name = Consolas 12
 EOF
+
+#  clean language pack & doc & other useless tools
+if $remainFiles; then
+    exit 0
+fi
+rm -rf /var/cache/* /var/log/* /var/lib/apt/lists/{mirror*,security*} /usr/share/doc /usr/share/bug /usr/share/vim/vim90/doc /etc/apt/sources.list.d/* /usr/share/icons/Adwaita /opt/sogoupinyin/files/share/resources/font /usr/share/presage /usr/local/share/themes/Windows-10-Dark-3.2.1-dark/{cinnamon,gnome-shell} /var/lib/dpkg/*-old /usr/share/xfce4/{weather,xkb} /usr/lib/x86_64-linux-gnu/xfce4/panel/plugins/{libweather.so,libxkb.so} /usr/share/themes/*
+shopt -s extglob
+rm -rf /usr/share/i18n/locales/!(iso*|trans*|i18n*|C|POSIX|zh_CN)
+rm -rf /usr/share/i18n/locales/translit_hangul
+rm -rf /usr/share/i18n/charmaps/!(ANSI_*|ISO-8859-1.gz|UTF-8.gz|GB*)
+rm -rf /usr/share/vim/vim90/lang/!(zh_CN*|menu_zh_CN*)
+rm -rf /usr/share/locale/!(zh_CN|zh_Hans|locale.alias)
+rm -rf /usr/share/code/locales/!(zh-CN.pak|en-US.pak)
+rm -rf /usr/share/open-vm-tools/messages/!(zh_CN)
+rm -rf /usr/share/man/!(man*|zh_CN)
+rm -rf /usr/share/help/!(C)
+rm -rf /opt/microsoft/msedge/locales/!(zh-CN*)
+rm -rf /opt/QQ/locales/!(zh-CN*)
+rm -rf /opt/sogoupinyin/files/share/resources/skin/!(default|logo|stretchrules.json|InputMode.xml)
+rm -rf /usr/share/backgrounds/xfce/!(xfce-leaves.svg)
+shopt -u extglob

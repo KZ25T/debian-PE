@@ -6,7 +6,7 @@
     <value type="int" value="1"/>
     <property name="dark-mode" type="bool" value="true"/>
 	<property name="panel-1" type="empty">
-      <property name="position" type="string" value="p=8;x=640;y=786"/> <!-- p x y 是猜的 -->
+      <property name="position" type="string" value="p=8;x=0;y=0"/>
       <property name="length" type="uint" value="100"/>
       <property name="position-locked" type="bool" value="true"/>
       <property name="icon-size" type="uint" value="24"/>
@@ -26,10 +26,9 @@
         <value type="int" value="12"/>
         <value type="int" value="13"/>
         <value type="int" value="14"/>
-		    <value type="int" value="15"/>
+        <value type="int" value="15"/>
         <value type="int" value="16"/>
         <value type="int" value="17"/>
-        <value type="int" value="18"/>
       </property>
     </property>
   </property>
@@ -80,9 +79,7 @@
       <property name="show-notifications" type="bool" value="true"/>
     </property>
     <property name="plugin-14" type="string" value="notification-plugin"/>
-    <property name="plugin-15" type="string" value="separator">
-      <property name="style" type="uint" value="0"/>
-    </property>
+    <property name="plugin-15" type="string" value="power-manager-plugin"/>
     <property name="plugin-16" type="string" value="actions">
       <property name="ask-confirmation" type="bool" value="true"/>
       <property name="appearance" type="uint" value="0"/>
@@ -101,10 +98,7 @@
         <value type="string" value="-logout-dialog"/>
       </property>
     </property>
-    <property name="plugin-17" type="string" value="separator">
-      <property name="style" type="uint" value="0"/>
-    </property>
-    <property name="plugin-18" type="string" value="clock">
+    <property name="plugin-17" type="string" value="clock">
 	  <property name="digital-layout" type="uint" value="1"/>
       <property name="digital-time-format" type="string" value="%_H:%M"/>
       <property name="digital-time-font" type="string" value="Microsoft YaHei 11"/>
