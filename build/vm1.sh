@@ -1,31 +1,53 @@
 #!/bin/bash
-remainFiles=false
-recommends="--no-install-recommends"
-if [[ "$1" == "--nodelete" ]]; then
-    remainFiles=true
-    recommends=""
+REMAIN_FILES=false
+INSTALL_SUFFIX="--no-install-recommends"
+os=""
+if [[ "$2" == "--nodelete" ]]; then
+    REMAIN_FILES=true
+    INSTALL_SUFFIX=""
+fi
+if [[ "$1" == "--debian" ]]; then
+    os="debian"
+elif [[ "$1" == "--kali-core" ]]; then
+    os="kali"
+elif [[ "$1" == "--kali-default" ]]; then
+    os="kali"
+    REMAIN_FILES=true
+    INSTALL_SUFFIX="kali-linux-default"
+fi
+if [[ -z "$os" ]]; then
+    echo "Usage: bash vm1.sh [--debian|--kali-core|--kali-default](must-need) [--nodelete]"
+    exit 1
 fi
 set -e
 trap 'echo "commamd error: $BASH_COMMAND"' ERR
 
 #  install software
-sed -i 's/security.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+if [[ "$os" == "debian" ]]; then
+    sed -i 's/security.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+elif [[ "$os" == "kali" ]]; then
+    sed -i 's#http://http.kali.org#https://mirrors.ustc.edu.cn#g' /etc/apt/sources.list
+fi
 apt update && apt upgrade -y
 ## These lines represent: Personal Computer Firmware, Server Firmware, System Common Software, Filesystem Drivers, User Common Software, Graphical Interface, Misc, External Software
 apt install -y \
-firmware-iwlwifi firmware-realtek firmware-brcm80211 firmware-linux firmware-intel-sound firmware-sof-signed firmware-misc-nonfree bluez-firmware \
+firmware-iwlwifi firmware-realtek firmware-brcm80211 firmware-linux firmware-intel-sound firmware-sof-signed firmware-misc-nonfree bluez-firmware intel-microcode amd64-microcode \
 firmware-bnx2 firmware-bnx2x  firmware-cavium firmware-myricom firmware-netronome firmware-netxen firmware-qlogic \
 alsa-topology-conf alsa-ucm-conf avahi-autoipd bluetooth efibootmgr grub-efi-amd64 powertop shim-signed shim-unsigned task-laptop usbutils wireless-tools wpasupplicant wireless-regdb \
 ntfs-3g btrfs-progs dosfstools mtools squashfs-tools exfatprogs xfsprogs \
-vim gparted hardinfo mlocate sudo zsh ncdu tldr cmake build-essential tree file man-db bash-completion python-is-python3 p7zip-full \
+vim gparted hardinfo plocate sudo zsh ssh ncdu tldr cmake build-essential tree file man-db bash-completion python-is-python3 p7zip-full engrampa \
 xorg xfce4 xfce4-goodies lightdm network-manager-gnome xfce4-power-manager xfce4-power-manager-plugins tumbler \
 live-boot open-vm-tools-desktop locales librsvg2-common arch-install-scripts udisks2 rsync \
 /mnt/*.deb \
-${recommends}
+${INSTALL_SUFFIX}
 ## web-browser should install recommends
 apt install -y firefox-esr
 ## remove software
-apt autoremove -y --purge xterm fonts-dejavu-core grub-pc linux-image-6.1.0-29-amd64
+if [[ "$os" == "debian" ]]; then
+    apt autoremove -y --purge xterm nano vim-tiny fonts-dejavu-core grub-pc linux-image-6.1.0-29-amd64 firmware-nvidia-graphics firmware-intel-graphics firmware-amd-graphics
+elif [[ "$os" == "kali" && $REMAIN_FILES == false ]]; then
+    apt autoremove -y --purge xterm nano vim-tiny grub-pc firmware-nvidia-graphics firmware-ath9k-htc firmware-atheros firmware-carl9170 firmware-intel-graphics firmware-amd-graphics firmware-intel-misc firmware-libertas firmware-marvell-prestera firmware-mediatek firmware-ti-connectivity firmware-zd1211 kali-linux-firmware
+fi
 
 #  fix setting
 ## fix editor setting
@@ -84,6 +106,9 @@ cp -r /mnt/Windows-10-Icons /usr/local/share/icons
 #  create user default doc
 cp -r /mnt/resource/userprofile/{*,.*} /etc/skel
 userdel -r uid1000
+if [[ "$os" == "kali" ]]; then
+    rm /etc/skel/.config -rf # kali linux does not need cpugraph
+fi
 
 #  fix theme
 ## right click
@@ -107,9 +132,23 @@ sed -i '/\[Profile\/IMName\]/,/DefaultValue=/ s/DefaultValue=.*/DefaultValue=sog
 sed -i '/\[Profile\/EnabledIMList\]/,/DefaultValue=/ s/DefaultValue=.*/DefaultValue=sogoupinyin:True,fcitx-keyboard-us:False/' /usr/share/fcitx/configdesc/profile.desc
 sed -i '/FontCh=.*/c\FontCh=Microsoft YaHei/' /opt/sogoupinyin/files/share/shell/dict/PCPYDict/env.ini
 ## panel settings
-cp /mnt/resource/etc/panel-default.xml /etc/xdg/xfce4/panel/default.xml
+if [[ "$os" == "debian" ]]; then
+    cp /mnt/resource/etc/panel-default-debian.xml /etc/xdg/xfce4/panel/default.xml
+elif [[ "$os" == "kali" ]]; then
+    cp /mnt/resource/etc/panel-default-kali.xml /etc/xdg/xfce4/panel/default.xml
+fi
+sed -i '/<property name="power-button-action"/a \ \ \ \ <property name="show-panel-label" type="uint" value="3"/>' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
 ## desktop settings
 cp /mnt/resource/etc/desktop-default.xml /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+## terminal settings
+cat <<EOF >> /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-terminal.xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-terminal" version="1.0">
+  <property name="font-name" type="string" value="Consolas 12"/>
+  <property name="misc-menubar-default" type="bool" value="false"/>
+</channel>
+EOF
 ## shortcut settings
 sed -i '/.*show_desktop_key.*/c\      <property name="&lt;Super&gt;d" type="string" value="show_desktop_key"\/>' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
 sed -i '/.*exo-open --launch TerminalEmulator.*/c\      <property name="&lt;Super&gt;r" type="string" value="exo-open --launch TerminalEmulator"\/>' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
@@ -132,10 +171,14 @@ font-name = Consolas 12
 EOF
 
 #  clean language pack & doc & other useless tools
-if $remainFiles; then
+if $REMAIN_FILES; then
     exit 0
 fi
-rm -rf /var/cache/* /var/log/* /var/lib/apt/lists/{mirror*,security*} /usr/share/doc /usr/share/bug /usr/share/vim/vim90/doc /etc/apt/sources.list.d/* /usr/share/icons/Adwaita /opt/sogoupinyin/files/share/resources/font /usr/share/presage /usr/local/share/themes/Windows-10-Dark-3.2.1-dark/{cinnamon,gnome-shell} /var/lib/dpkg/*-old /usr/share/xfce4/{weather,xkb} /usr/lib/x86_64-linux-gnu/xfce4/panel/plugins/{libweather.so,libxkb.so} /usr/share/themes/*
+rm -rf /var/cache/* /var/log/* /var/lib/apt/lists/{mirror*,security*} /usr/share/doc /usr/share/bug /usr/share/vim/vim90/doc /etc/apt/sources.list.d/* /usr/share/icons/Adwaita /opt/sogoupinyin/files/share/resources/font /usr/share/presage /usr/local/share/themes/Windows-10-Dark-3.2.1-dark/{cinnamon,gnome-shell} /var/lib/dpkg/*-old /usr/share/xfce4/{weather,xkb} /usr/lib/x86_64-linux-gnu/xfce4/panel/plugins/{libweather.so,libxkb.so} /usr/share/themes/* /usr/share/fonts/truetype/* /etc/fonts/conf.avail
+if [[ "$os" == "kali" ]]; then
+    rm -rf /etc/fonts/conf.d/*dejavu* # delete font file for kali
+fi
+fc-cache -f -v
 shopt -s extglob
 rm -rf /usr/share/i18n/locales/!(iso*|trans*|i18n*|C|POSIX|zh_CN)
 rm -rf /usr/share/i18n/locales/translit_hangul
@@ -146,6 +189,7 @@ rm -rf /usr/share/code/locales/!(zh-CN.pak|en-US.pak)
 rm -rf /usr/share/open-vm-tools/messages/!(zh_CN)
 rm -rf /usr/share/man/!(man*|zh_CN)
 rm -rf /usr/share/help/!(C)
+rm -rf /usr/share/vim/vim90/tutor/!(tutor|tutor.zh_cn.utf-8)
 rm -rf /opt/microsoft/msedge/locales/!(zh-CN*)
 rm -rf /opt/QQ/locales/!(zh-CN*)
 rm -rf /opt/sogoupinyin/files/share/resources/skin/!(default|logo|stretchrules.json|InputMode.xml)

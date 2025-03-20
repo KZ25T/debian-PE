@@ -66,6 +66,8 @@
 
 复制整个系统启动部分以外的内容：`sudo unsquashfs -dest /mnt/debian /run/live/medium/live/filesystem.squashfs`
 
+> 注：`/run/live/medium/live` 这一套应该是启动时选择默认选项时的系统路径位置，如果你的启动选项不是默认选项，你可能需要通过 `lsblk` 查看挂载点。
+
 安装内核：
 
 - 复制内核：`sudo cp /run/live/medium/live/vmlinuz /mnt/debian/boot/vmlinuz-6.1.0-amd64`
@@ -113,11 +115,19 @@
 
 ### 3.6 你已经成功安装了系统
 
-重启后安装必要软件、更新软件源和软件、安装全面的字体等。
+重启后安装必要软件、更新软件源和软件、安装全面的字体和驱动等。
 
-推荐安装：
+推荐安装软件：
 
 - 字体：`fonts-noto-mono`
 - 声音：`pulseaudio` 和 `pavucontrol`
 - 摄像：`cheese`
 - 压缩文件查看：`engrampa`
+- 聊天软件：微信（前往官网下载）
+
+推荐安装驱动：
+
+- 总成驱动（强烈推荐）：`firmware-linux`
+- 显卡：`firmware-nvidia-graphics` `firmware-intel-graphics` 或 `firmware-amd-graphics` 选自己合适的。
+- kali 用户：安装 `kali-linux-firmware kali-desktop-xfce` 模块化解决驱动问题。
+- nvidia 加速计算：参考我的博客园 [https://www.cnblogs.com/KZ25T/p/18567357](https://www.cnblogs.com/KZ25T/p/18567357)
