@@ -91,7 +91,7 @@
 
 - 删除 livecd 专属配置：`sudoedit /etc/rc.local` 把 `exit 0` 上面的两行删掉。
 - 运行 `sudoedit /etc/sudoers.d/nopasswd` 把 `uid1000` 改成你自己的名字。
-- 运行 `sudo cp /usr/share/grub/default/grub /etc/default/grub` 然后 `sudoedit /etc/default/grub` 将 `GRUB_DISABLE_OS_PROBER` 后面的配置改为 `false`（如果那一行是被注释状态，这时候请取消前面的注释并修改为 `false`）然后 `sudo update-grub` 以添加其他系统。
+- 运行 `sudoedit /etc/default/grub` 将 `GRUB_DISABLE_OS_PROBER` 后面的配置改为 `false`（如果那一行是被注释状态，这时候请取消前面的注释并修改为 `false`）然后 `sudo update-grub` 以添加其他系统。
 - `kali` 安装之后，在启动页面里可能会显示为 Debian，这不要紧，会修的可以自己修。
 
 接下来跳转 3.3 节。
@@ -142,7 +142,6 @@
 
 - 卸载系统：`sudo umount /mnt/debian/boot/efi /mnt/debian`，然后重启回到原有的 linux 系统
 - 配置系统探测：执行：
-  - `ls /etc/default/grub`，如果没有这个文件，执行 `cp /usr/share/grub/default/grub /etc/default/grub`
   - `vim /etc/default/grub` 将 `GRUB_DISABLE_OS_PROBER` 的那一行设置为 false（如果是被注释状态，这时候请取消前面的注释并修改为 false）
 - 执行 `sudo update-grub`（有些发行版为 `grub-mkconfig -o /boot/grub/grub.cfg`）
 - 重启，跳过 3.5.2 节
@@ -154,7 +153,6 @@
 - 再次进入 chroot：`sudo arch-chroot /mnt/debian`
 - 安装 grub：`(chroot) grub-install --target=x86_64-efi --boot-directory=/boot --efi-directory=/boot/efi <你的硬盘>（如 /dev/sda）`，如果是安装到移动硬盘上，需要加上参数 `--removable`
 - 配置系统探测：如果你硬盘上还有其他操作系统，那么执行：
-  - `(chroot) ls /etc/default/grub`，如果没有这个文件，执行 `(chroot)cp /usr/share/grub/default/grub /etc/default/grub`
   - `(chroot) vim /etc/default/grub` 将 `GRUB_DISABLE_OS_PROBER` 的那一行设置为 false（如果是被注释状态，这时候请取消前面的注释并修改为 false）
 - 配置 grub 文件：`(chroot) update-grub`
 - 退出 chroot：ctrl+D
