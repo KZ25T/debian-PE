@@ -110,7 +110,7 @@ source ~/.oh-my-zsh/plugins/incr/incr*.zsh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-#zsh-autosuggestion颜色为白色的问题解决
+# solve the problem that zsh-autosuggestion shows white color
 if [[ "$TERM" == "xterm" ]]; then
 	export TERM=xterm-256color
 fi

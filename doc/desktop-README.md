@@ -17,12 +17,12 @@
 - `QQ` `vscode` `firefox 浏览器` `搜狗输入法`等常用软件
 - `vim` `cmake` `gcc` `tldr` 等开发工具
 - `hardinfo` `gparted` 等系统修复工具
-- `tar` `7z` 等压缩工具（注：没有 rar/zip 命令，请使用 `7z x` 解压）
+- `tar` `7z` 等压缩工具
 - 常见网卡驱动等固件和对应系统软件
 
 ### 2.2 用户管理
 
-本机包括 `root` 用户（密码为 `sudo`）和 `uid1000`（没有密码）两个用户。开机后自动登录 `uid1000` 并可以免密码执行 sudo 命令。
+本机包括 `root` 和 `uid1000`（都没有密码）两个用户。开机后自动登录 `uid1000` 并可以免密码执行 sudo 命令。
 
 ### 2.3 常用命令与快捷键
 
@@ -49,9 +49,56 @@
 
 **提醒：** 这里的教程仅适用于 64 位计算机的 UEFI 启动（比较新的电脑应该都是这个）。对于比较老的系统可能需要自行安装 grub-pc 软件包。
 
-以下以安装 debian 为例。首先启动本 LiveCD 操作系统。
+以下以安装 debian 为例。首先启动本 LiveCD 操作系统。接下来你可以选择 [图形化安装](#31-可选图形化安装系统) 或 [手动安装](#32-可选手动安装系统)。对于新手来说，可以选择图形化安装。
 
-### 3.1 硬盘分区
+> 挖坑：自己写一个 calamares-install-debian
+
+### 3.1 （可选）图形化安装系统
+
+图形化安装系统采取 Debian 官方提供的工具。本人测试数量较少，没有比较全部的测试，不保证成功，只讲述方法：
+
+#### 3.1.1 安装软件
+
+- 联网，`sudo apt update` 更新软件源。
+- `sudo apt install calamares-settings-debian` 安装软件包。如果安装失败，可能需要首先 `sudo apt upgrade` 更新软件。
+- `sudoedit /etc/calamares/modules/packages.conf` 把 remove 下面 `live-boot` 后边的内容全删掉。（会用 vim 吧？不会用的使用 `sudo mousepad` 替代 `sudoedit`）
+
+#### 3.1.2 安装系统
+
+断网并运行 `sudo install-debian`（或 `sudo calamares-install-debian`） 启动 Debian 安装器。
+
+- `Location` 选上海（在地图上点出来，或者自己选）
+    > Debian 官方在此处提供的地图不正确，作者本人不认可图中的中国国境线，正确的国境线请参考自然资源部的标准地图服务。此处仅作为教学讲解。
+- `Partitions` 自己设置硬盘分区，记得挂载 EFI 分区。
+  - 选择 `manual partitioning`
+  - 一般一个几百兆到 1GB 左右的一个 FAT32 分区是 EFI 分区。点击该分区，下面点击 `edit`，确保 `Content` 是 `Keep` 然后 `Mount point` 选 `/boot/efi`
+  - 然后选择根目录的分区。如果是之前已经空出来了一部分磁盘分区就点击 `Free Space` 之后下面 `Create` 新建，`content` 选 `Format`，`Mount Point` 选 `/`
+- `Users` 自己设置用户名和密码。
+- `Summary` 点击 `Next` 进入系统安装，进度条跑到 10~20 的时候在终端按下 `Ctrl+Z` 挂起，运行
+
+  ```bash
+  sudo cp /run/live/medium/live/vmlinuz /tmp/calamares-root-*/boot/vmlinuz-$(uname -r)
+  sudo cp /run/live/medium/live/initrd.img /tmp/calamares-root-*/boot/initrd.img-$(uname -r)
+  ```
+
+  那个 `*` 参考你的自动补全，或者 `lsblk` 显示的挂载点。
+
+  然后运行 `fg %1` 继续安装，安装完毕之后重启。
+
+#### 3.1.3 其他设置
+
+重启后你可能需要如下设置：
+
+- 删除 livecd 专属配置：`sudoedit /etc/rc.local` 把 `exit 0` 上面的两行删掉。
+- 运行 `sudoedit /etc/sudoers.d/nopasswd` 把 `uid1000` 改成你自己的名字。
+- 运行 `sudo cp /usr/share/grub/default/grub /etc/default/grub` 然后 `sudoedit /etc/default/grub` 将 `GRUB_DISABLE_OS_PROBER` 后面的配置改为 `false`（如果那一行是被注释状态，这时候请取消前面的注释并修改为 `false`）然后 `sudo update-grub` 以添加其他系统。
+- `kali` 安装之后，在启动页面里可能会显示为 Debian，这不要紧，会修的可以自己修。
+
+接下来跳转 3.3 节。
+
+### 3.2 （可选）手动安装系统
+
+#### 3.2.1 硬盘分区
 
 启动 GParted （命令：`sudo gparted`）给硬盘分区，给安装本系统划分出硬盘空间（至少一个 ext4 格式作为根目录分区），并挂载到 `/mnt/debian` 上。
 
@@ -62,7 +109,7 @@
 - 挂载根目录： `sudo mkdir -p /mnt/debian && sudo mount /dev/sda2 /mnt/debian`
 - 挂载 ESP 分区： `sudo mkdir -p /mnt/debian/boot/efi && sudo mount /dev/sda1 /mnt/debian/boot/efi`
 
-### 3.2 复制文件
+#### 3.2.2 复制文件
 
 复制整个系统启动部分以外的内容：`sudo unsquashfs -dest /mnt/debian /run/live/medium/live/filesystem.squashfs`
 
@@ -73,7 +120,7 @@
 - 复制内核：`sudo cp /run/live/medium/live/vmlinuz /mnt/debian/boot/vmlinuz-6.1.0-amd64`
 - 复制 initramfs 文件：`sudo cp /run/live/medium/live/initrd.img /mnt/debian/boot/initrd.img-6.1.0-amd64`
 
-### 3.3 修复配置
+#### 3.2.3 修复配置
 
 - 进入 chroot：`sudo arch-chroot /mnt/debian`
 - 删除 livecd 专属配置：`(chroot) vim /etc/rc.local` 把 `exit 0` 上面的两行删掉。
@@ -83,13 +130,13 @@
 - 运行 `(chroot) vim /etc/sudoers.d/nopasswd` 把 `uid1000` 改成你自己的名字。
 - 退出 chroot：ctrl+D
 
-### 3.4 设置挂载点
+#### 3.2.4 设置挂载点
 
 设置挂载系统：`sudo bash -c "genfstab -U /mnt/debian >> /mnt/debian/etc/fstab"`
 
-### 3.5 安装 grub 并配置引导
+#### 3.2.5 安装 grub 并配置引导
 
-#### 3.5.1 如果您的硬盘已经有 grub
+##### 3.2.5.1 如果您的硬盘已经有 grub
 
 这种常见于你的电脑已经有一个 linux 操作系统，启动时会进入 grub 页面。这种情况下您不需要安装 grub，只需要：
 
@@ -100,7 +147,7 @@
 - 执行 `sudo update-grub`（有些发行版为 `grub-mkconfig -o /boot/grub/grub.cfg`）
 - 重启，跳过 3.5.2 节
 
-#### 3.5.2 如果您的硬盘没有 grub
+##### 3.2.5.2 如果您的硬盘没有 grub
 
 这种常见于你的电脑可能只有一个 windows 10/11，此时需要安装 grub：
 
@@ -113,7 +160,7 @@
 - 退出 chroot：ctrl+D
 - 卸载系统：`sudo umount /mnt/debian/boot/efi /mnt/debian` 并重启。
 
-### 3.6 你已经成功安装了系统
+### 3.3 你已经成功安装了系统
 
 重启后安装必要软件、更新软件源和软件、安装全面的字体和驱动等。
 

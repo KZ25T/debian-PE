@@ -33,7 +33,7 @@ apt update && apt upgrade -y
 apt install -y \
 firmware-iwlwifi firmware-realtek firmware-brcm80211 firmware-linux firmware-intel-sound firmware-sof-signed firmware-misc-nonfree bluez-firmware intel-microcode amd64-microcode \
 firmware-bnx2 firmware-bnx2x  firmware-cavium firmware-myricom firmware-netronome firmware-netxen firmware-qlogic \
-alsa-topology-conf alsa-ucm-conf avahi-autoipd bluetooth efibootmgr grub-efi-amd64 powertop shim-signed shim-unsigned task-laptop usbutils wireless-tools wpasupplicant wireless-regdb \
+alsa-topology-conf alsa-ucm-conf avahi-autoipd bluetooth efibootmgr grub-efi powertop shim-signed shim-unsigned task-laptop usbutils wireless-tools wpasupplicant wireless-regdb \
 ntfs-3g btrfs-progs dosfstools mtools squashfs-tools exfatprogs xfsprogs \
 vim gparted hardinfo plocate sudo zsh ssh ncdu tldr cmake build-essential tree file man-db bash-completion python-is-python3 p7zip-full engrampa \
 xorg xfce4 xfce4-goodies lightdm network-manager-gnome xfce4-power-manager xfce4-power-manager-plugins tumbler \
@@ -51,11 +51,12 @@ fi
 
 #  fix setting
 ## fix editor setting
-echo "3" | update-alternatives --config editor
+update-alternatives --set editor /usr/bin/vim.basic
 ## fix sudo setting
 cat <<EOF > /etc/sudoers.d/nopasswd
 uid1000 ALL=(ALL:ALL) NOPASSWD:ALL
 EOF
+passwd -d root
 ## fix locale setting
 dpkg-reconfigure locales
 ## fix path setting
@@ -92,6 +93,8 @@ sed -i 's/=M/=m/' /etc/xdg/user-dirs.defaults
 sed -i 's/=V/=v/' /etc/xdg/user-dirs.defaults
 ## fix apt config
 sed -i 's/main non-free-firmware/main contrib non-free non-free-firmware/' /etc/apt/sources.list
+## fix grub config
+cp /usr/share/grub/default/grub /etc/default/grub
 
 #  copy files from outside
 cp /mnt/mlt /usr/local/bin
@@ -108,6 +111,7 @@ cp -r /mnt/resource/userprofile/{*,.*} /etc/skel
 userdel -r uid1000
 if [[ "$os" == "kali" ]]; then
     rm /etc/skel/.config -rf # kali linux does not need cpugraph
+    sed -i '/export PATH=\$PATH:\$HOME\/.local\/bin/d' /etc/skel/.zshrc
 fi
 
 #  fix theme
@@ -137,7 +141,7 @@ if [[ "$os" == "debian" ]]; then
 elif [[ "$os" == "kali" ]]; then
     cp /mnt/resource/etc/panel-default-kali.xml /etc/xdg/xfce4/panel/default.xml
 fi
-sed -i '/<property name="power-button-action"/a \ \ \ \ <property name="show-panel-label" type="uint" value="3"/>' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
+sed -i '/<property name="power-button-action"/a \ \ \ \ <property name="show-panel-label" type="uint" value="0"/>' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
 ## desktop settings
 cp /mnt/resource/etc/desktop-default.xml /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
 ## terminal settings
