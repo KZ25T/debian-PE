@@ -41,8 +41,8 @@
 
 |文件名|大小|md5校验|
 |--|--|--|
-|debian-live-2025.iso|1140469760B，<1088MB，<1.07GB|d49ee11a6b8c35f377670e8f9b6cf80a|
-|kali_core-live-2025.iso|1276522496B，<1218MB，<1.19GB|9c8afe9790533381b2293927fd5ca627|
+|debian-live-2025.iso|1140469760B，<1088MB，<1.07GB|0d7d35ce5bae8684165ea7cafa896658|
+|kali_core-live-2025.iso|1276522496B，<1218MB，<1.19GB|5217e56ebbf1ec7bd8668e653b89dbd7|
 |kali_default-live-2025.iso|4774303744B，<4554MB，<4.45GB|629e3daf77137a61121826029e0c4cbf|
 
 > 两个 kali 的区别：`core` 适合一般人使用的轻量级系统，类似于 debian-live 换系统；`default` 是适合网络信息安全方面开发和测试使用的系统，类似 kali-linux 官方的 livecd 做我的定制。制作区别在于 `default` 安装了 `kali-linux-default` 包。
@@ -83,6 +83,24 @@
 - 图形桌面：xfce4
 - 登录管理器：lightdm（已配置为自动登录）
 
+### 3.1 启动选项
+
+UEFI 启动时的页面是我自己写的 `Windows-like-grub`，一共有 9 个启动选项，按上下键切换，按回车键启动。以 Debian 为例，选项为：
+
+- `Debian Live` 正常启动，启动后需要保持安装此系统的外置存储介质（如 U 盘）插入，否则会导致系统崩溃。
+- `Debian Live (toram)` 正常启动，启动时把整个系统镜像加载到内存中，所以启动速度较慢，但启动之后可以拔掉外置存储介质。
+- `Debian Live (persistence)` 持久化启动，也就是说本次启动后对文件的修改会保存到外置存储介质中，下次启动时仍然可以看到。具体操作请参考：
+  - `Debian` 文档 [https://wiki.debian.org/DebianLive/LiveUsbPersistence](https://wiki.debian.org/DebianLive/LiveUsbPersistence)
+  - `Kali` 文档 [https://www.kali.org/docs/usb/usb-persistence/](https://www.kali.org/docs/usb/usb-persistence/)
+- `Debian Live (persistence encrypted)` 持久化加密启动，也就是对上一个启动方式保存在外置存储介质中的文件进行加密。
+- `Debian Live (nographic)` 启动时无图形界面，仅显示命令行界面。
+- `Debian Live (fail-safe mode)` 使用极强的兼容性启动，运行速度极慢。
+- `memtest` 测试内存。
+- `UEFI shell` UEFI Shell，用于调试 UEFI 引导。
+- `UEFI Firmware Settings` UEFI 固件设置。
+
+如果你还需要更多的启动选项，可以自己写 `grub.cfg` 或启动到选择页面时按 `e` 自己修改内核参数。
+
 ## 4. 发布记录
 
 ### 4.0 预览版（2024 年发布）
@@ -104,9 +122,8 @@
     - 在作者家里和朋友的多台电脑测试良好。
     - 仍然有少数老旧或罕见硬件不支持：[列表](./doc/unsupported-hardware.md)
   - 图形：增强图形显示兼容性。
-    - 可以适应多种屏幕尺寸。
+    - 可以适应多种屏幕型号、尺寸，适应多种虚拟机。
   - 虚拟机：增加 VMWare、VirtualBox 和 qemu 的兼容性。
-    - [ ] 当前版本 bug：VMware 和 virtual box 无法显示桌面壁纸，这是小问题，你可以自己设置壁纸。脚本已更新，因为构建花销大，所以等下一个版本修复。
 - 体积缩小，不到上一次的三分之二，功能不变。
   - 为缩小体积，我删除了没有用的语言包、文档、装饰等。
   - 因此系统只能在简体中文和英文环境下使用
