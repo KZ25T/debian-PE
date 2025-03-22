@@ -33,10 +33,16 @@
 
 |文件名|大小|md5校验|
 |--|--|--|
-|debian-livecd-2025.iso|1140469760B，<1088MB，<1.07GB|e928d4096e9cb96626b01ea849f31c67|
-|kali_core-livecd-2025.iso|1276522496B，<1218MB，<1.19GB|5cd48a743c37e27678733f65cc9780b7|
+|debian-live-2025.iso|1140469760B，<1088MB，<1.07GB|d49ee11a6b8c35f377670e8f9b6cf80a|
+|kali_core-live-2025.iso|1276522496B，<1218MB，<1.19GB|9c8afe9790533381b2293927fd5ca627|
+|kali_default-live-2025.iso|4774303744B，<4554MB，<4.45GB|629e3daf77137a61121826029e0c4cbf|
 
-kali 版暂未发布，需要等待 kali 2025.1 发布。下载链接里目前那个是 2024 年预览版。
+> 两个 kali 的区别：`core` 适合一般人使用的轻量级系统，类似于 debian-live 换系统；`default` 是适合网络信息安全方面开发和测试使用的系统，类似 kali-linux 官方的 livecd 做我的定制。制作区别在于 `default` 安装了 `kali-linux-default` 包。
+>
+> 作为对比：
+>
+> - debian 官方 livecd（参考 [中科大镜像](https://mirrors.ustc.edu.cn/debian-cd/12.10.0-live/amd64/iso-hybrid/) 的 debian-live-12.10.0-amd64-xfce.iso）体积高达 3GB，但它甚至没有 vim，更不用说 QQ 等软件。
+> - kali 官方 livecd（参考 [中科大镜像](https://mirrors.ustc.edu.cn/kali-images/kali-2025.1a/) 的 kali-linux-2025.1a-live-amd64.iso）体积为 4.6GB，相比于我的 kali_default 功能更少、使用不便。
 
 ### 2.2 预装软件
 
@@ -64,7 +70,7 @@ kali 版暂未发布，需要等待 kali 2025.1 发布。下载链接里目前�
 系统基本信息：
 
 - 架构：amd64, x86_64
-- 发行版：Debian 12.9，Kali 2025.1（也称2025.1a）
+- 发行版：Debian 12.10，Kali 2025.1（也称 2025.1a，本文不再区分）
 - 内核版本：Debian:6.1.0，Kali:6.12.13
 - 图形桌面：xfce4
 - 登录管理器：lightdm（已配置为自动登录）
@@ -79,7 +85,7 @@ kali 版暂未发布，需要等待 kali 2025.1 发布。下载链接里目前�
 
 ### 4.1 2025 版
 
-包含 `Debian(12.10)`，`Kali core(2025.1)`，`Kali default` 暂未发布。
+包含 `Debian(12.10)`，`Kali core(2025.1)`，`Kali default(2025.1)`
 
 相比于 2024 年第一次发布，本次升级了：
 
@@ -95,6 +101,7 @@ kali 版暂未发布，需要等待 kali 2025.1 发布。下载链接里目前�
 - 体积缩小，不到上一次的三分之二，功能不变。
   - 为缩小体积，我删除了没有用的语言包、文档、装饰等。
   - 因此系统只能在简体中文和英文环境下使用
+  - 本条仅针对前两个，不包括 `kali default`
 - 开源构建方法，提升自动化构建水平。
 - 在系统配置标准化和自动化方面有巨大提升。
   - 得益于 deepseek 和通义千问的帮助，本次发布极大提升标准化程度，取消了用户预定义文件，全部迁移到系统配置内。
@@ -112,6 +119,8 @@ Debian 是一个很干净的系统，为了使得其变得好用，我引入了�
 - 修改常用编辑器、文字浏览器为 vim 并进行配置。
 - 预装中文（简体和繁体）环境，但系统仍为英文。
 - 添加字体 consolas 和 msyh，分别作为等宽字体和常用字体。
+
+Kali 也是类似。
 
 ## 6. 构建
 

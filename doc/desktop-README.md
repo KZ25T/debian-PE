@@ -51,11 +51,13 @@
 
 以下以安装 debian 为例。首先启动本 LiveCD 操作系统。接下来你可以选择 [图形化安装](#31-可选图形化安装系统) 或 [手动安装](#32-可选手动安装系统)。对于新手来说，可以选择图形化安装。
 
-> 挖坑：自己写一个 calamares-install-debian
-
 ### 3.1 （可选）图形化安装系统
 
-图形化安装系统采取 Debian 官方提供的工具。本人测试数量较少，没有比较全部的测试，不保证成功，只讲述方法：
+图形化安装系统采取 Debian 官方提供的工具。
+
+本人测试数量较少，没有比较全部的测试，不保证成功。目前看来这个方法可能导致开机启动太慢、语言不对、kali 显示为 debian 的问题。
+
+> 挖坑：自己写一个 calamares-install-debian
 
 #### 3.1.1 安装软件
 
@@ -89,9 +91,9 @@
 
 重启后你可能需要如下设置：
 
+- 启动后运行 `sudo dpkg-reconfigure locales` 把系统语言选择为 `C.UTF-8`，退出系统、重新登录。
 - 删除 livecd 专属配置：`sudoedit /etc/rc.local` 把 `exit 0` 上面的两行删掉。
 - 运行 `sudoedit /etc/sudoers.d/nopasswd` 把 `uid1000` 改成你自己的名字。
-- 运行 `sudoedit /etc/default/grub` 将 `GRUB_DISABLE_OS_PROBER` 后面的配置改为 `false`（如果那一行是被注释状态，这时候请取消前面的注释并修改为 `false`）然后 `sudo update-grub` 以添加其他系统。
 - `kali` 安装之后，在启动页面里可能会显示为 Debian，这不要紧，会修的可以自己修。
 
 接下来跳转 3.3 节。
@@ -153,7 +155,6 @@
 - 再次进入 chroot：`sudo arch-chroot /mnt/debian`
 - 安装 grub：`(chroot) grub-install --target=x86_64-efi --boot-directory=/boot --efi-directory=/boot/efi <你的硬盘>（如 /dev/sda）`，如果是安装到移动硬盘上，需要加上参数 `--removable`
 - 配置系统探测：如果你硬盘上还有其他操作系统，那么执行：
-  - `(chroot) vim /etc/default/grub` 将 `GRUB_DISABLE_OS_PROBER` 的那一行设置为 false（如果是被注释状态，这时候请取消前面的注释并修改为 false）
 - 配置 grub 文件：`(chroot) update-grub`
 - 退出 chroot：ctrl+D
 - 卸载系统：`sudo umount /mnt/debian/boot/efi /mnt/debian` 并重启。
@@ -161,6 +162,8 @@
 ### 3.3 你已经成功安装了系统
 
 重启后安装必要软件、更新软件源和软件、安装全面的字体和驱动等。
+
+卸载软件：`sudo apt autoremove --purge live-boot`
 
 推荐安装软件：
 

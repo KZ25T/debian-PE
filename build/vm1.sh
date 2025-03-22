@@ -95,6 +95,8 @@ sed -i 's/=V/=v/' /etc/xdg/user-dirs.defaults
 sed -i 's/main non-free-firmware/main contrib non-free non-free-firmware/' /etc/apt/sources.list
 ## fix grub config
 cp /usr/share/grub/default/grub /etc/default/grub
+mkdir -p /etc/default/grub.d
+echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub.d/os-prober.cfg
 
 #  copy files from outside
 cp /mnt/mlt /usr/local/bin
