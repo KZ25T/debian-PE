@@ -44,10 +44,14 @@ ${INSTALL_SUFFIX}
 apt install -y firefox-esr
 ## remove software
 if [[ "$os" == "debian" ]]; then
-    apt autoremove -y --purge xterm nano vim-tiny fonts-dejavu-core grub-pc firmware-amd-graphics
+    apt autoremove -y --purge xterm nano vim-tiny fonts-dejavu-core firmware-amd-graphics
 elif [[ "$os" == "kali" && $REMAIN_FILES == false ]]; then
-    apt autoremove -y --purge xterm nano vim-tiny grub-pc firmware-nvidia-graphics firmware-ath9k-htc firmware-atheros firmware-carl9170 firmware-intel-graphics firmware-amd-graphics firmware-intel-misc firmware-libertas firmware-marvell-prestera firmware-mediatek firmware-ti-connectivity firmware-zd1211 kali-linux-firmware
+    apt autoremove -y --purge xterm nano vim-tiny firmware-nvidia-graphics firmware-ath9k-htc firmware-atheros firmware-carl9170 firmware-intel-graphics firmware-amd-graphics firmware-intel-misc firmware-libertas firmware-marvell-prestera firmware-mediatek firmware-ti-connectivity firmware-zd1211 kali-linux-firmware
+elif [[ "$1" == "--kali-default" ]]; then
+    apt autoremove -y --purge zutty
+    rm -r /usr/share/icons/Adwaita* /usr/share/icons/Flat*
 fi
+apt autoremove -y --purge
 
 #  fix setting
 ## fix editor setting
