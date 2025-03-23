@@ -41,8 +41,8 @@
 
 |文件名|大小|md5校验|
 |--|--|--|
-|debian-live-2025.iso|1140469760B，<1088MB，<1.07GB|0d7d35ce5bae8684165ea7cafa896658|
-|kali_core-live-2025.iso|1276522496B，<1218MB，<1.19GB|5217e56ebbf1ec7bd8668e653b89dbd7|
+|debian-live-2025.iso|1125969920B，<1074MB，<1.05GB|5e4a53e5d0ea1feec11a2239bf7631fb|
+|kali_core-live-2025.iso|1261023232B，<1203MB，<1.18GB|fa9b4dbfa9e75bf996f7c277ce4120a9|
 |kali_default-live-2025.iso|4774303744B，<4554MB，<4.45GB|629e3daf77137a61121826029e0c4cbf|
 
 > 两个 kali 的区别：`core` 适合一般人使用的轻量级系统，类似于 debian-live 换系统；`default` 是适合网络信息安全方面开发和测试使用的系统，类似 kali-linux 官方的 livecd 做我的定制。制作区别在于 `default` 安装了 `kali-linux-default` 包。

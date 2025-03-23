@@ -40,7 +40,7 @@ qemu-system-x86_64 -m 24G -smp 4 -cpu host -enable-kvm  -virtfs local,id=share1,
 ```bash
 # 虚拟机
 mount -t 9p -o trans=virtio,version=9p2000.L hostshare /mnt
-bash /mnt/build/vm1.sh
+bash /mnt/build/vm1.sh --debian # or --kali-core, --kali-default
 shutdown now
 ```
 
@@ -48,29 +48,12 @@ shutdown now
 
 脚本最后会修理主题，这一部分已经实现全自动化运行。
 
-## 4. 打包文件系统
-
-```bash
-# 主机
-# ~/downloads/debian.iso 是另一个 livecd 镜像，可以直接使用我这个
-qemu-system-x86_64 -m 24G -smp 8 -cpu host -enable-kvm  -virtfs local,id=share1,path=/tmp/data,mount_tag=hostshare,security_model=none,readonly=off -cdrom ~/downloads/debian.iso -hda ./debian.qcow2 -boot d
-```
-
-进入虚拟机，登陆后执行：
-
-```bash
-# 虚拟机
-mount -t 9p -o trans=virtio,version=9p2000.L hostshare /mnt
-bash /mnt/build/vm2.sh
-shutdown now
-```
-
-## 5. 打包镜像
+## 4. 打包镜像
 
 ```bash
 cd /dev/shm
-sudo cp -rp ~/public/cdrom .
-sudo rm cdrom/live/{vmlinuz,initrd.img,filesystem.squashfs}
+7z x ~/desktop/debian-live-2025.iso -o./cdrom
+sudo rm -r cdrom/live/{\[BOOT\],vmlinuz,initrd.img,filesystem.squashfs}
 sudo cp /tmp/data/{filesystem.squashfs,vmlinuz,initrd.img} cdrom/live/
 sudo xorriso -as mkisofs -R -r -J -joliet-long -l -cache-inodes -iso-level 3 -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -partition_offset 16 -publisher "github:KZ25T" -V "DebianLive" --modification-date=2025021613200000 -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -append_partition 2 0x01 ~/desktop/efi.img  -o my.iso cdrom
 ```

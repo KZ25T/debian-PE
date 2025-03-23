@@ -34,7 +34,7 @@ apt install -y \
 firmware-iwlwifi firmware-realtek firmware-brcm80211 firmware-linux firmware-intel-sound firmware-sof-signed firmware-misc-nonfree bluez-firmware intel-microcode amd64-microcode \
 firmware-bnx2 firmware-bnx2x  firmware-cavium firmware-myricom firmware-netronome firmware-netxen firmware-qlogic \
 alsa-topology-conf alsa-ucm-conf avahi-autoipd bluetooth efibootmgr grub-efi powertop shim-signed shim-unsigned task-laptop usbutils wireless-tools wpasupplicant wireless-regdb \
-ntfs-3g btrfs-progs dosfstools mtools squashfs-tools exfatprogs xfsprogs \
+ntfs-3g btrfs-progs dosfstools mtools squashfs-tools exfatprogs xfsprogs cryptsetup cryptsetup-initramfs \
 vim gparted hardinfo plocate sudo zsh ssh ncdu tldr cmake build-essential tree file man-db bash-completion python-is-python3 p7zip-full engrampa \
 xorg xfce4 xfce4-goodies lightdm network-manager-gnome xfce4-power-manager xfce4-power-manager-plugins tumbler \
 live-boot open-vm-tools-desktop locales librsvg2-common arch-install-scripts udisks2 rsync \
@@ -116,7 +116,7 @@ cp -r /mnt/Windows-10-Icons /usr/local/share/icons
 cp -r /mnt/resource/userprofile/{*,.*} /etc/skel
 userdel -r uid1000
 if [[ "$os" == "kali" ]]; then
-    rm /etc/skel/.config -rf # kali linux does not need cpugraph
+    rm /etc/skel/.config -rf # kali linux does not need cpugraph & terminalrc
     sed -i '/export PATH=\$PATH:\$HOME\/.local\/bin/d' /etc/skel/.zshrc
 fi
 
@@ -157,6 +157,7 @@ cat <<EOF >> /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-terminal.xml
 <channel name="xfce4-terminal" version="1.0">
   <property name="font-name" type="string" value="Consolas 12"/>
   <property name="misc-menubar-default" type="bool" value="false"/>
+  <property name="scrolling-unlimited" type="bool" value="true"/>
 </channel>
 EOF
 ## shortcut settings
@@ -184,7 +185,7 @@ EOF
 if $REMAIN_FILES; then
     exit 0
 fi
-rm -rf /var/cache/* /var/log/* /var/lib/apt/lists/{mirror*,security*} /usr/share/doc /usr/share/bug /usr/share/vim/vim90/doc /etc/apt/sources.list.d/* /usr/share/icons/Adwaita /opt/sogoupinyin/files/share/resources/font /usr/share/presage /usr/local/share/themes/Windows-10-Dark-3.2.1-dark/{cinnamon,gnome-shell} /var/lib/dpkg/*-old /usr/share/xfce4/{weather,xkb} /usr/lib/x86_64-linux-gnu/xfce4/panel/plugins/{libweather.so,libxkb.so} /usr/share/themes/* /usr/share/fonts/truetype/* /etc/fonts/conf.avail
+rm -rf /var/cache/* /var/log/* /var/lib/apt/lists/{mirror*,security*} /usr/share/doc /usr/share/bug /usr/share/vim/vim90/doc /etc/apt/sources.list.d/* /usr/share/icons/Adwaita /opt/sogoupinyin/files/share/resources/font /usr/share/presage /usr/local/share/themes/Windows-10-Dark-3.2.1-dark/{cinnamon,gnome-shell} /var/lib/dpkg/*-old /usr/share/xfce4/{weather,xkb} /usr/lib/x86_64-linux-gnu/xfce4/panel/plugins/{libweather.so,libxkb.so} /usr/share/themes/* /usr/share/fonts/truetype/* /etc/fonts/conf.avail /usr/share/code/{LICENSES.chromium.html,resources/app/licenses} /usr/share/fonts/X11
 if [[ "$os" == "kali" ]]; then
     rm -rf /etc/fonts/conf.d/*dejavu* # delete font file for kali
 fi
@@ -205,3 +206,9 @@ rm -rf /opt/QQ/locales/!(zh-CN*)
 rm -rf /opt/sogoupinyin/files/share/resources/skin/!(default|logo|stretchrules.json|InputMode.xml)
 rm -rf /usr/share/backgrounds/xfce/!(xfce-leaves.svg)
 shopt -u extglob
+
+## pack up system
+rm /mnt/filesystem.squashfs || true
+mksquashfs / /mnt/filesystem.squashfs -e /vmlinuz -e /vmlinuz.old -e /initrd.img -e /initrd.img.old -e /boot -e /proc -e /sys -e /run -e /srv -e /dev -e /tmp/* -e /tmp/.* -e /mnt -e /lost+found -e /root/.bash_history -e /root/.ssh -e /root/.viminfo -e /etc/fstab -comp xz
+cp /vmlinuz /mnt/vmlinuz
+cp /initrd.img /mnt/initrd.img
