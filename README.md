@@ -41,7 +41,7 @@
 
 |文件名|大小|md5校验|
 |--|--|--|
-|debian-live-2025.iso|1125969920B，<1074MB，<1.05GB|5e4a53e5d0ea1feec11a2239bf7631fb|
+|debian-live-2025.iso|1125969920B，<1074MB，<1.05GB|f037da2ed02db1cdf1536aca112cd93e|
 |kali_core-live-2025.iso|1261023232B，<1203MB，<1.18GB|fa9b4dbfa9e75bf996f7c277ce4120a9|
 |kali_default-live-2025.iso|4774303744B，<4554MB，<4.45GB|629e3daf77137a61121826029e0c4cbf|
 
